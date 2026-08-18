@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.example.agendadb.HelloController">
+
+    <!-- PANEL IZQUIERDO: Formulario de captura (VBox actúa como Auto Layout vertical) -->
+    <left>
+        <VBox spacing="15" style="-fx-padding: 20px; -fx-background-color: #f4f4f4;">
+            <Label text="Gestión de Agenda" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+
+            <VBox spacing="5">
+                <Label text="Nombre:"/>
+                <TextField fx:id="txtNombre" promptText="Ej. John Doe"/>
+            </VBox>
+
+            <VBox spacing="5">
+                <Label text="Dirección:"/>
+                <TextField fx:id="txtDireccion" promptText="Ej. Calle Falsa 123"/>
+            </VBox>
+
+            <VBox spacing="5">
+                <Label text="Teléfonos:"/>
+                <TextField fx:id="txtTelefonos" promptText="Ej. 555-1234, 555-9876"/>
+                <Label text="*Separa múltiples teléfonos con comas" style="-fx-font-size: 10px; -fx-text-fill: gray;"/>
+            </VBox>
+
+            <!-- HBox actúa como Auto Layout horizontal para los botones -->
+            <HBox spacing="10" style="-fx-padding: 10px 0 0 0;">
+                <Button fx:id="btnGuardar" text="Guardar" onAction="#onGuardarClick" style="-fx-background-color: #4CAF50; -fx-text-fill: white;"/>
+                <Button fx:id="btnActualizar" text="Actualizar" onAction="#onActualizarClick" style="-fx-background-color: #2196F3; -fx-text-fill: white;"/>
+            </HBox>
+
+            <HBox spacing="10">
+                <Button fx:id="btnEliminar" text="Eliminar" onAction="#onEliminarClick" style="-fx-background-color: #f44336; -fx-text-fill: white;"/>
+                <Button fx:id="btnLimpiar" text="Limpiar" onAction="#onLimpiarClick"/>
+            </HBox>
+        </VBox>
+    </left>
+
+    <!-- PANEL CENTRAL: Tabla de registros -->
+    <center>
+        <TableView fx:id="tablaPersonas" style="-fx-padding: 10px;">
+            <columns>
+                <TableColumn fx:id="colId" text="ID" prefWidth="50"/>
+                <TableColumn fx:id="colNombre" text="Nombre" prefWidth="150"/>
+                <TableColumn fx:id="colDireccion" text="Dirección" prefWidth="150"/>
+                <TableColumn fx:id="colTelefonos" text="Teléfonos" prefWidth="150"/>
+            </columns>
+        </TableView>
+    </center>
+
+</BorderPane>
