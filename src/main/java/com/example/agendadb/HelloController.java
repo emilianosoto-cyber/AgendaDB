@@ -1,6 +1,7 @@
 package com.example.agendadb;
 
 import com.example.agendadb.dao.PersonaDAO;
+import com.example.agendadb.model.Direccion;
 import com.example.agendadb.model.Persona;
 import com.example.agendadb.model.Telefono;
 import javafx.collections.FXCollections;
@@ -27,19 +28,17 @@ public class HelloController {
     private PersonaDAO personaDAO = new PersonaDAO();
     private ObservableList<Persona> listaPersonas;
 
-    // Se ejecuta automáticamente al abrir la ventana
     @FXML
     public void initialize() {
-        // 1. Vincular las columnas de la tabla con los atributos de la clase Persona
+        // 1. Vincular las columnas (Nota que ahora busca 'direcciones' en plural)
         colId.setCellValueFactory(new PropertyValueFactory<>("id"));
         colNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
-        colDireccion.setCellValueFactory(new PropertyValueFactory<>("direccion"));
+        colDireccion.setCellValueFactory(new PropertyValueFactory<>("direcciones"));
         colTelefonos.setCellValueFactory(new PropertyValueFactory<>("telefonos"));
 
-        // 2. Cargar los datos desde MariaDB
         cargarDatos();
 
-        // 3. Escuchar clics en la tabla para llenar el formulario automáticamente
+        // 2. Escuchar clics en la tabla
         tablaPersonas.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             if (newSelection != null) {
                 llenarFormulario(newSelection);
@@ -49,16 +48,24 @@ public class HelloController {
 
     private void cargarDatos() {
         List<Persona> personas = personaDAO.obtenerTodas();
-        // Las ObservableList notifican a la tabla cuando hay cambios
         listaPersonas = FXCollections.observableArrayList(personas);
         tablaPersonas.setItems(listaPersonas);
     }
 
     private void llenarFormulario(Persona p) {
         txtNombre.setText(p.getNombre());
-        txtDireccion.setText(p.getDireccion());
 
-        // Unir los teléfonos con comas para mostrarlos en la caja de texto
+        // Unir las direcciones con comas para la caja de texto
+        StringBuilder dirs = new StringBuilder();
+        for (int i = 0; i < p.getDirecciones().size(); i++) {
+            dirs.append(p.getDirecciones().get(i).getDireccionTexto());
+            if (i < p.getDirecciones().size() - 1) {
+                dirs.append(", ");
+            }
+        }
+        txtDireccion.setText(dirs.toString());
+
+        // Unir los teléfonos con comas para la caja de texto
         StringBuilder tels = new StringBuilder();
         for (int i = 0; i < p.getTelefonos().size(); i++) {
             tels.append(p.getTelefonos().get(i).getTelefono());
@@ -76,9 +83,18 @@ public class HelloController {
             return;
         }
 
-        Persona p = new Persona(0, txtNombre.getText(), txtDireccion.getText());
+        // El constructor ya no pide la dirección, solo el nombre
+        Persona p = new Persona(0, txtNombre.getText());
 
-        // Separar los teléfonos por comas y agregarlos a la lista
+        // Procesar las múltiples direcciones separadas por coma
+        String[] dirs = txtDireccion.getText().split(",");
+        for (String d : dirs) {
+            if (!d.trim().isEmpty()) {
+                p.getDirecciones().add(new Direccion(0, d.trim()));
+            }
+        }
+
+        // Procesar los teléfonos
         String[] tels = txtTelefonos.getText().split(",");
         for (String t : tels) {
             if (!t.trim().isEmpty()) {
@@ -87,7 +103,7 @@ public class HelloController {
         }
 
         if (personaDAO.insertar(p)) {
-            cargarDatos(); // Refrescar la tabla
+            cargarDatos();
             onLimpiarClick();
         } else {
             mostrarAlerta("Error", "No se pudo guardar la persona.");
@@ -103,9 +119,18 @@ public class HelloController {
         }
 
         seleccionada.setNombre(txtNombre.getText());
-        seleccionada.setDireccion(txtDireccion.getText());
-        seleccionada.getTelefonos().clear();
 
+        // Limpiar direcciones anteriores y agregar las nuevas
+        seleccionada.getDirecciones().clear();
+        String[] dirs = txtDireccion.getText().split(",");
+        for (String d : dirs) {
+            if (!d.trim().isEmpty()) {
+                seleccionada.getDirecciones().add(new Direccion(0, d.trim()));
+            }
+        }
+
+        // Limpiar teléfonos anteriores y agregar los nuevos
+        seleccionada.getTelefonos().clear();
         String[] tels = txtTelefonos.getText().split(",");
         for (String t : tels) {
             if (!t.trim().isEmpty()) {

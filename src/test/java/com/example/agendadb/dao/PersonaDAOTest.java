@@ -1,5 +1,6 @@
 package com.example.agendadb.dao;
 
+import com.example.agendadb.model.Direccion;
 import com.example.agendadb.model.Persona;
 import org.junit.jupiter.api.Test;
 
@@ -14,7 +15,11 @@ class PersonaDAOTest {
         PersonaDAO dao = new PersonaDAO();
 
         // 1. CREATE: Probar Inserción
-        Persona personaPrueba = new Persona(0, "Usuario Prueba", "Calle Test 404");
+        Persona personaPrueba = new Persona(0, "Usuario Prueba");
+        // Agregamos múltiples direcciones para probar la relación N:M
+        personaPrueba.getDirecciones().add(new Direccion(0, "Calle Test 404"));
+        personaPrueba.getDirecciones().add(new Direccion(0, "Avenida Prueba 505"));
+
         boolean insertado = dao.insertar(personaPrueba);
 
         assertTrue(insertado, "La inserción debe devolver true.");
@@ -26,6 +31,9 @@ class PersonaDAOTest {
 
         // 3. UPDATE: Probar Actualización
         personaPrueba.setNombre("Usuario Modificado");
+        personaPrueba.getDirecciones().clear(); // Borramos las anteriores
+        personaPrueba.getDirecciones().add(new Direccion(0, "Calle Nueva 999")); // Ponemos una nueva
+
         boolean actualizado = dao.actualizar(personaPrueba);
         assertTrue(actualizado, "La actualización debe devolver true.");
 
