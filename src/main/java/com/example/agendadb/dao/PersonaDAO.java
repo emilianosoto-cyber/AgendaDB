@@ -8,8 +8,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PersonaDAO {
-
+public class PersonaDAO implements IPersonaDAO {
     // ==========================================================
     // C - CREATE (Altas)
     // ==========================================================
